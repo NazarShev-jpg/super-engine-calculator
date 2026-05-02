@@ -109,57 +109,53 @@ namespace
 
     int getPrecedence(const string &op, bool unary = false)
     {
+        // Порядок приоритетов (от низшего к высшему):
+        // ||(-1) < &&(0) < |(1) < &(2) < ==/!=(3) < </>/<=/>=(4)
+        // < <</>>(5) < +/-(6) < *//(7) < %%(7) < ^(8) < ^^(9) < ^^^(10)
+        // < постфикс(11) < унарный(12) < функция без скобок(13)
+
+        // Унарные
         if (op == "u" || op == "u+" || op == "u!")
-            return 8;
+            return 12;
         if (op == "++" || op == "--")
-        {
-            if (unary)
-                return 8;
-            else
-                return 7;
-        }
-        if (unary && op == "-")
-            return 8;
-        if (unary && op == "~")
-            return 8;
-        if (op == "==" || op == "!=" || op == "<" || op == ">" || op == "<=" || op == ">=")
-            return 1;
-        if (op == "&&")
-            return 0;
-        if (op == "||")
-            return -1;
-        if (op == "!" || op == "!!" || op == "%")
-            return 7;
-        if (op == "^^")
-            return 5;
-        if (op == "^^^")
-            return 6;
-        if (op == "%%")
-            return 2;
-        if (op == "<<" || op == ">>")
-            return 2;
-        if (op == "&")
-            return 1;
-        if (op == "|")
-            return 0;
+            return unary ? 12 : 11;
+        if (unary && (op == "-" || op == "~"))
+            return 12;
+
+        // Логические
+        if (op == "||")  return -1;
+        if (op == "&&")  return 0;
+
+        // Битовые
+        if (op == "|")   return 1;
+        if (op == "&")   return 2;
+
+        // Сравнения
+        if (op == "==" || op == "!=")              return 3;
+        if (op == "<" || op == ">" || op == "<=" || op == ">=") return 4;
+
+        // Сдвиги
+        if (op == "<<" || op == ">>")  return 5;
+
+        // Постфиксные
+        if (op == "!" || op == "!!" || op == "%")  return 11;
+
+        // Гипероператоры
+        if (op == "^^")   return 9;
+        if (op == "^^^")  return 10;
+
+        // Арифметика
+        if (op == "%%")  return 7;
         if (op.length() == 1)
         {
             switch (op[0])
             {
-            case '+':
-            case '-':
-                return 1;
-            case '*':
-            case '/':
-                return 2;
-            case '^':
-                return 3;
-            default:
-                return 0;
+            case '+': case '-': return 6;
+            case '*': case '/': return 7;
+            case '^':           return 8;
+            default:            return 0;
             }
         }
-        if (op == "f" || op == "F")
-            return 5;
         return 0;
     }
 
@@ -538,7 +534,7 @@ Token Parser::parseIdentifier()
         if (arity == 1)
         {
             Token tok(TokenType::Function, nameLower, "", 1);
-            tok.precedence = 9;   // высокий приоритет как унарный оператор
+            tok.precedence = 13;  // выше унарного (12), как и положено функции без скобок
             return tok;
         }
         else

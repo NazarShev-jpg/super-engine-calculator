@@ -173,13 +173,24 @@ const std::map<std::string, HelpEntry> &getDetailedHelp()
         {"map", {"map(val, in_min, in_max, out_min, out_max) linearly maps value.",
                  "map(val, in_min, in_max, out_min, out_max) линейно отображает значение.",
                  "map(5,0,10,0,100)=50", "map(5,0,10,0,100)=50"}},
+        {"hypot", {"hypot(a, b) – Euclidean distance: sqrt(a²+b²). Numerically stable for large values.",
+                   "hypot(a, b) – Евклидово расстояние: sqrt(a²+b²). Численно устойчив при больших значениях.",
+                   "hypot(3,4)=5\nhypot(3!,4!!)=10",
+                   "hypot(3,4)=5\nhypot(3!,4!!)=10"}},
+        {"atan2", {"atan2(y, x) – angle (radians) of point (x,y) from positive x-axis. Range: (-π, π].",
+                   "atan2(y, x) – угол (радианы) точки (x,y) относительно положительной оси x. Диапазон: (-π, π].",
+                   "atan2(1,1)=0.7854\natan2(0,-1)=3.14159\natan2(1,0)=1.5708",
+                   "atan2(1,1)=0.7854\natan2(0,-1)=3.14159\natan2(1,0)=1.5708"}},
 
         // ========== КОНВЕРТЕРЫ ==========
         {"deg2rad", {"Convert degrees to radians.", "Переводит градусы в радианы.", "deg2rad(180)=3.14159", "deg2rad(180)=3.14159"}},
         {"rad2deg", {"Convert radians to degrees.", "Переводит радианы в градусы.", "rad2deg(pi)=180", "rad2deg(pi)=180"}},
 
         // ========== СПЕЦИАЛЬНЫЕ КОМАНДЫ ==========
-        {"egcd", {"egcd a b: computes gcd(a,b) and Bezout coefficients.", "egcd a b: вычисляет НОД(a,b) и коэффициенты Безу.", "egcd 48 18 -> gcd=6, x=-1, y=3", "нод 48 18 -> НОД=6, x=-1, y=3"}},
+        {"egcd", {"egcd a b: computes gcd(a,b) and Bezout coefficients x,y such that a*x + b*y = gcd.\nAlso available as expression: egcd(a;b) returns just gcd(a,b).",
+                  "egcd a b: вычисляет НОД(a,b) и коэффициенты Безу x,y такие что a*x + b*y = НОД.\nТакже доступно как выражение: egcd(a;b) возвращает только НОД(a,b).",
+                  "egcd 48 18 -> gcd=6, x=-1, y=3\negcd(48;18) = 6",
+                  "egcd 48 18 -> НОД=6, x=-1, y=3\negcd(48;18) = 6"}},
         {"factor", {"factor n: prime factorization of integer n.", "factor n: разложение целого числа n на простые множители.", "factor 120 -> 2^3 * 3 * 5", "фактор/разложить 120 -> 2^3 * 3 * 5"}},
         {"crt", {"crt: solves system x ≡ a1 (mod m1), x ≡ a2 (mod m2), ...", "crt: решает систему сравнений x ≡ a1 (mod m1), x ≡ a2 (mod m2), ...", "crt 2 3 3 5 -> x=8", "кто/китайская 2 3 3 5 -> x=8"}},
         {"++", {"Increment operator. ++x or x++ adds 1 to the number.", "Оператор инкремента. ++x или x++ увеличивает число на 1.", "++5 = 6\n5++ = 6\n2+5++ = 8", "++5 = 6\n5++ = 6\n2+5++ = 8"}},
@@ -205,6 +216,14 @@ const std::map<std::string, HelpEntry> &getDetailedHelp()
         "  rpn      - переключить состояние.",
         "rpn on   -> enables RPN debug output\nrpn off  -> disables RPN output\nrpn      -> toggles",
         "rpn on   -> включает отладочный вывод RPN\nrpn off  -> выключает вывод RPN\nrpn      -> переключает"
+        }},
+        {"hardmode", {
+        "hardmode on/off – switches between standard double mode and googology mode (BigNumber internal representation). "
+        "In hardmode, numbers can exceed 1e308 and use tower representation or level-index, allowing computation with extremely large values.",
+        "hardmode on/off – переключает между обычным режимом (double) и режимом гугологии (внутреннее представление BigNumber). "
+        "В hardmode числа могут превышать 1e308 и использовать башенное или level‑index представление, открывая вычисления с экстремально большими значениями.",
+        "hardmode on   -> switch to googology mode\nhardmode off  -> back to double mode",
+        "hardmode on   -> переключиться в режим гугологии\nhardmode off  -> вернуться в double-режим"
         }},
     };
     return detailedHelp;

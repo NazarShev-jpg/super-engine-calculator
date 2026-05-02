@@ -27,7 +27,7 @@ static const std::map<std::string, std::map<std::string, std::string>>& getTrans
             {"basic_operators", "  Operators: + - * / ^ (power) %% (modulo)"},
             {"basic_unary", "  Unary: -5, +5, !5 (logical NOT)"},
             {"basic_postfix", "  Postfix: 5! (factorial), 5!!, 20%"},
-            {"basic_precedence", "  Precedence (high to low): postfix, unary, ^, * / %%, + -, comparison, logical"},
+            {"basic_precedence", "  Precedence (high→low): func, unary, ^^^/^^, ^, */÷%%, +-, shifts, ><, ==!=, &, |, &&, ||, ?:"},
             {"basic_implicit", "  Implicit multiplication: 2(3+5), 2pi, (1+2)(3+4)"},
             {"basic_ans", "  Last result: ans (e.g., ans*2, 2ans)"},
             {"basic_comments", "  Comments: // comment (everything after // is ignored)"},
@@ -55,31 +55,25 @@ static const std::map<std::string, std::map<std::string, std::string>>& getTrans
             {"examples_cancelled", "Cancelled.\n"},
             {"examples_invalid", "Invalid choice.\n"},
             {"oper_header", "\n--- OPERATORS (precedence high to low) ---\n"},
-            {"oper_table", 
+            {"oper_table",
             "  Oper (name)              | Prec | Assoc | Example\n"
             "  -------------------------+------+-------+------------\n"
-            "  ! (postfix fact), !!     |  7   | left  | 5! = 120\n"
-            "  % (postfix percent)      |  7   | left  | 20% = 0.2\n"
-            "  ++ (postfix increment)   |  7   | left  | 5++ = 6\n"
-            "  -- (postfix decrement)   |  7   | left  | 5-- = 4\n"
-            "  ^^ (tetration)           |  5   | right | 2^^3 = 16\n"
-            "  ^^^ (pentation)          |  6   | right | 3^^^2 ≈ 7.6e12\n"
-            "  ++у (prefix increment)   |  8   | right | ++5 = 6\n"
-            "  --у (prefix decrement)   |  8   | right | --5 = 4\n"
-            "  -u (unary minus)         |  8   | right | -5\n"
-            "  +u (unary plus)          |  8   | right | +5\n"
-            "  ~ (bitwise NOT)          |  8   | right | ~0 = -1\n"
-            "  !u (prefix logical NOT)  |  8   | right | !5 = 0\n"
-            "  ^ (power)                |  3   | right | 2^3^2 = 512\n"
-            "  *  /  %% (modulo)        |  2   | left  | 10%%3 = 1\n"
-            "  +  -                     |  1   | left  | 2+3 = 5\n"
-            "  << >> (bitwise shifts)   |  2   | left  | 1<<3 = 8\n"
-            "  & (bitwise AND)          |  1   | left  | 5&3 = 1\n"
-            "  | (bitwise OR)           |  0   | left  | 5|3 = 7\n"
-            "  == != < > <= >=          |  1   | left  | 2<3 = 1\n"
-            "  && (logical AND)         |  0   | left  | 1&&0 = 0\n"
+            "  func (no parens)         |  13  | right | sin 1\n"
+            "  -u +u ~ !u ++ -- (prefix)|  12  | right | -5, ~0, !5\n"
+            "  ! !! % ++ -- (postfix)   |  11  | left  | 5! = 120\n"
+            "  ^^^ (pentation)          |  10  | right | 2^^^3\n"
+            "  ^^ (tetration)           |   9  | right | 2^^3 = 16\n"
+            "  ^ (power)                |   8  | right | 2^3^2 = 512\n"
+            "  *  /  %% (modulo)        |   7  | left  | 10%%3 = 1\n"
+            "  +  -                     |   6  | left  | 2+3 = 5\n"
+            "  << >> (bitwise shifts)   |   5  | left  | 1<<3 = 8\n"
+            "  < > <= >= (comparison)   |   4  | left  | 2<3 = 1\n"
+            "  == !=                    |   3  | left  | 2==2 = 1\n"
+            "  & (bitwise AND)          |   2  | left  | 5&3 = 1\n"
+            "  | (bitwise OR)           |   1  | left  | 5|3 = 7\n"
+            "  && (logical AND)         |   0  | left  | 1&&0 = 0\n"
             "  || (logical OR)          |  -1  | left  | 1||0 = 1\n"
-            "  ?: (ternery)             |  -2  | right | 2>3?10:20 = 20\n"},
+            "  ?: (ternary)             |  -2  | right | 2>3?10:20 = 20\n"},
             {"oper_notes", 
             "\nNotes:\n"
             "  - Precedence: higher number = evaluated earlier.\n"
@@ -101,7 +95,7 @@ static const std::map<std::string, std::map<std::string, std::string>>& getTrans
             {"func_comb", "  Combinatorics & number theory:\n    fact, subfact, nCr, nPr, gcd, lcm, isPrime, fib, catalan, bell, stirling1, stirling2, nextPrime, prevPrime, eulerPhi, moebius, sigma, isPerfect, primitiveRoot, isArmstrong, isSuperPrime"},
             {"func_special", "  Special functions:\n    gamma, beta, erf, zeta"},
             {"func_hyper", "  Hyperoperators:\n    tet(a,b), pent(a,b)"},
-            {"func_multi", "  Multi-argument:\n    clamp(x,min,max), map(val,in_min,in_max,out_min,out_max), modpow(a,b,m)"},
+            {"func_multi", "  Multi-argument:\n    hypot(a,b), atan2(y,x), clamp(x,min,max), map(val,in_min,in_max,out_min,out_max), modpow(a,b,m)"},
             {"func_conv", "  Converters:\n    deg2rad, rad2deg"},
             {"cmd_egcd", "  egcd       - extended Euclidean algorithm (gcd and Bezout coefficients)"},
             {"cmd_factor", "  factor     - prime factorization of an integer"},
@@ -217,6 +211,9 @@ static const std::map<std::string, std::map<std::string, std::string>>& getTrans
             {"crt_x_prefix", "x = "},
             {"crt_mod_infix", " (mod "},
             {"crt_mod_suffix", ")"},
+            {"hardmode_on",  "Hardmode (BigNumber) enabled"},
+            {"hardmode_off", "Hardmode (BigNumber) disabled"},
+            {"hardmode_toggle", "Hardmode toggled"},
         }},
         {"ru", {
             {"welcome", "Супер Калькулятор версии " + VERSION + " от Назара Шева"},
@@ -239,7 +236,7 @@ static const std::map<std::string, std::map<std::string, std::string>>& getTrans
             {"basic_operators", "  Операторы: + - * / ^ (степень) %% (остаток)"},
             {"basic_unary", "  Унарные: -5, +5, !5 (логическое НЕ)"},
             {"basic_postfix", "  Постфиксные: 5! (факториал), 5!!, 20%"},
-            {"basic_precedence", "  Приоритет (от высокого к низкому): постфиксные, унарные, ^, * / %%, + -, сравнения, логические"},
+            {"basic_precedence", "  Приоритет (от высокого к низкому): функция, унарные, ^^^/^^, ^, */÷%%, +-, сдвиги, ><, ==!=, &, |, &&, ||, ?:"},
             {"basic_implicit", "  Неявное умножение: 2(3+5), 2pi, (1+2)(3+4)"},
             {"basic_ans", "  Последний результат: ans (например, ans*2, 2ans)"},
             {"basic_comments", "  Комментарии: // комментарий (всё после // игнорируется)"},
@@ -268,31 +265,24 @@ static const std::map<std::string, std::map<std::string, std::string>>& getTrans
             {"examples_invalid", "Неверный выбор.\n"},
             {"oper_header", "\n--- ОПЕРАТОРЫ (приоритет от высокого к низкому) ---\n"},
             {"oper_table",
-            "  Опер (название)            | Приор | Ассоц | Пример\n"
-            "  ---------------------------+-------+-------+------------\n"
-            "  ! (постфиксный факториал)  |   7   | левая | 5! = 120\n"
-            "  !! (двойной факториал)     |   7   | левая | 5!! = 15\n"
-            "  % (постфиксный процент)    |   7   | левая | 20% = 0.2\n"
-            "  ++ (постфиксный инкремент) |   7   | левая | 5++ = 6\n"
-            "  -- (постфиксный декремент) |   7   | левая | 5-- = 4\n"
-            "  ^^ (тетрация)              |   5   | правая| 2^^3 = 16\n"
-            "  ^^^ (пентация)             |   6   | правая| 3^^^2 ≈ 7.6e12\n"
-            "  ++у (префиксный инкремент) |   8   | правая| ++5 = 6\n"
-            "  --у (префиксный декремент) |   8   | правая| --5 = 4\n"
-            "  -у (унарный минус)         |   8   | правая| -5\n"
-            "  +у (унарный плюс)          |   8   | правая| +5\n"
-            "  ~ (побитовое НЕ)           |   8   | правая| ~0 = -1\n"
-            "  !у (префиксное логич. НЕ)  |   8   | правая| !5 = 0\n"
-            "  ^ (степень)                |   3   | правая| 2^3^2 = 512\n"
-            "  *  /  %% (остаток)         |   2   | левая | 10%%3 = 1\n"
-            "  +  -                       |   1   | левая | 2+3 = 5\n"
-            "  << >> (побитовые сдвиги)   |   2   | левая | 1<<3 = 8\n"
-            "  & (побитовое И)            |   1   | левая | 5&3 = 1\n"
-            "  | (побитовое ИЛИ)          |   0   | левая | 5|3 = 7\n"
-            "  == != < > <= >=            |   1   | левая | 2<3 = 1\n"
-            "  && (логическое И)          |   0   | левая | 1&&0 = 0\n"
-            "  || (логическое ИЛИ)        |  -1   | левая | 1||0 = 1\n"
-            "  ?: (тернарный)             |  -2   | правая| 2>3?10:20 = 20\n"},
+            "  Опер (название)              | Приор | Ассоц  | Пример\n"
+            "  -----------------------------+-------+--------+------------\n"
+            "  функция (без скобок)         |   13  | правая | sin 1\n"
+            "  -у +у ~ !у ++ -- (префикс)   |   12  | правая | -5, ~0, !5\n"
+            "  ! !! % ++ -- (постфикс)      |   11  | левая  | 5! = 120\n"
+            "  ^^^ (пентация)               |   10  | правая | 2^^^3\n"
+            "  ^^ (тетрация)                |    9  | правая | 2^^3 = 16\n"
+            "  ^ (степень)                  |    8  | правая | 2^3^2 = 512\n"
+            "  *  /  %% (остаток)           |    7  | левая  | 10%%3 = 1\n"
+            "  +  -                         |    6  | левая  | 2+3 = 5\n"
+            "  << >> (побитовые сдвиги)     |    5  | левая  | 1<<3 = 8\n"
+            "  < > <= >= (сравнение)        |    4  | левая  | 2<3 = 1\n"
+            "  == !=                        |    3  | левая  | 2==2 = 1\n"
+            "  & (побитовое И)              |    2  | левая  | 5&3 = 1\n"
+            "  | (побитовое ИЛИ)            |    1  | левая  | 5|3 = 7\n"
+            "  && (логическое И)            |    0  | левая  | 1&&0 = 0\n"
+            "  || (логическое ИЛИ)          |   -1  | левая  | 1||0 = 1\n"
+            "  ?: (тернарный)               |   -2  | правая | 2>3?10:20 = 20\n"},
             {"oper_notes",
             "\nПримечания:\n"
             "  - Приоритет: чем выше число, тем раньше выполняется оператор.\n"
@@ -314,7 +304,7 @@ static const std::map<std::string, std::map<std::string, std::string>>& getTrans
             {"func_comb", "  Комбинаторика и теория чисел:\n    fact, subfact, nCr, nPr, gcd, lcm, isPrime, fib, catalan, bell, stirling1, stirling2, nextPrime, prevPrime, eulerPhi, moebius, sigma, isPerfect, primitiveRoot, isArmstrong, isSuperPrime"},
             {"func_special", "  Специальные функции:\n    gamma, beta, erf, zeta"},
             {"func_hyper", "  Гипероператоры:\n    tet(a,b), pent(a,b)"},
-            {"func_multi", "  Многоаргументные:\n    clamp(x,min,max), map(val,in_min,in_max,out_min,out_max), modpow(a,b,m)"},
+            {"func_multi", "  Многоаргументные:\n    hypot(a,b), atan2(y,x), clamp(x,min,max), map(val,in_min,in_max,out_min,out_max), modpow(a,b,m)"},
             {"func_conv", "  Конвертеры:\n    deg2rad, rad2deg"},
             {"cmd_egcd", "  egcd       - расширенный алгоритм Евклида (НОД и коэффициенты Безу)"},
             {"cmd_factor", "  factor     - разложение целого числа на простые множители"},
@@ -430,6 +420,9 @@ static const std::map<std::string, std::map<std::string, std::string>>& getTrans
             {"crt_x_prefix", "x = "},
             {"crt_mod_infix", " (mod "},
             {"crt_mod_suffix", ")"},
+            {"hardmode_on_ru",  "Режим гугологии (BigNumber) включён"},
+            {"hardmode_off_ru", "Режим гугологии (BigNumber) выключен"},
+            {"hardmode_toggle_ru", "Режим гугологии переключён"},
         }}
     };
     return translations;
