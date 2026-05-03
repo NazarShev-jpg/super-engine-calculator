@@ -119,7 +119,7 @@ namespace
 
         // Унарные
         if (op == "u" || op == "u+" || op == "u!")
-            return 12;
+            return 13;
         if (op == "++" || op == "--")
             return unary ? 12 : 11;
         if (unary && (op == "-" || op == "~"))
@@ -536,7 +536,7 @@ Token Parser::parseIdentifier()
         if (arity == 1)
         {
             Token tok(TokenType::Function, nameLower, "", 1);
-            tok.precedence = 13;  // выше унарного (12), как и положено функции без скобок
+            tok.precedence = 12;  // выше унарного (12), как и положено функции без скобок
             return tok;
         }
         else

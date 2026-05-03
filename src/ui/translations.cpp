@@ -58,8 +58,8 @@ static const std::map<std::string, std::map<std::string, std::string>>& getTrans
             {"oper_table",
             "  Oper (name)              | Prec | Assoc | Example\n"
             "  -------------------------+------+-------+------------\n"
-            "  func (no parens)         |  13  | right | sin 1\n"
-            "  -u +u ~ !u ++ -- (prefix)|  12  | right | -5, ~0, !5\n"
+            "  -u +u ~ !u ++ -- (prefix)|  13  | right | -5, ~0, !5\n"
+            "  func (no parens)         |  12  | right | sin 1\n"
             "  ! !! % ++ -- (postfix)   |  11  | left  | 5! = 120\n"
             "  ^^^ (pentation)          |  10  | right | 2^^^3\n"
             "  ^^ (tetration)           |   9  | right | 2^^3 = 16\n"
@@ -267,8 +267,8 @@ static const std::map<std::string, std::map<std::string, std::string>>& getTrans
             {"oper_table",
             "  Опер (название)              | Приор | Ассоц  | Пример\n"
             "  -----------------------------+-------+--------+------------\n"
-            "  функция (без скобок)         |   13  | правая | sin 1\n"
-            "  -у +у ~ !у ++ -- (префикс)   |   12  | правая | -5, ~0, !5\n"
+            "  -у +у ~ !у ++ -- (префикс)   |   13  | правая | -5, ~0, !5\n"
+            "  функция (без скобок)         |   12  | правая | sin 1\n"
             "  ! !! % ++ -- (постфикс)      |   11  | левая  | 5! = 120\n"
             "  ^^^ (пентация)               |   10  | правая | 2^^^3\n"
             "  ^^ (тетрация)                |    9  | правая | 2^^3 = 16\n"
