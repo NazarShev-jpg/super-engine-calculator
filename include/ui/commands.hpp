@@ -10,6 +10,7 @@ struct Session {
     int outputPrecision = -1;
     double lastResult = 0.0;
     bool showRPN = false;
+    bool greedyFunctions = false;  // false = strict, true = normal
 };
 
 // Обрабатывает ввод как команду калькулятора.

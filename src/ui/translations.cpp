@@ -214,6 +214,8 @@ static const std::map<std::string, std::map<std::string, std::string>>& getTrans
             {"hardmode_on",  "Hardmode (BigNumber) enabled"},
             {"hardmode_off", "Hardmode (BigNumber) disabled"},
             {"hardmode_toggle", "Hardmode toggled"},
+            {"funcmode_normal", "Function mode: greedy (sin pi/2 = sin(pi/2))"},
+            {"funcmode_strict", "Function mode: strict (sin pi/2 = sin(pi)/2)"},
         }},
         {"ru", {
             {"welcome", "Супер Калькулятор версии " + VERSION + " от Назара Шева"},
@@ -423,6 +425,8 @@ static const std::map<std::string, std::map<std::string, std::string>>& getTrans
             {"hardmode_on_ru",  "Режим гугологии (BigNumber) включён"},
             {"hardmode_off_ru", "Режим гугологии (BigNumber) выключен"},
             {"hardmode_toggle_ru", "Режим гугологии переключён"},
+            {"funcmode_normal", "Режим функций: 'жадный' (sin pi/2 = sin(pi/2))"},
+            {"funcmode_strict", "Режим функций: 'строгий' (sin pi/2 = sin(pi)/2)"},
         }}
     };
     return translations;

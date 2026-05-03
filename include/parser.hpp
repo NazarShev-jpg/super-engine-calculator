@@ -7,8 +7,8 @@
 
 class Parser {
 public:
-    static std::vector<Token> parse(const std::string& expr);
-    static std::vector<Token> toRPN(const std::vector<Token>& tokens);
+    static std::vector<Token> parse(const std::string& expr, bool greedyFunctions = false);
+    static std::vector<Token> toRPN(const std::vector<Token>& tokens, bool greedyFunctions = false);
 
 private:
     std::string m_expr;

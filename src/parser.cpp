@@ -169,7 +169,7 @@ namespace
 }
 
 // ========== Публичные методы ==========
-vector<Token> Parser::parse(const string &expr)
+vector<Token> Parser::parse(const string &expr, bool greedyFunctions)
 {
     Parser p;
     p.m_expr = expr;
@@ -179,7 +179,7 @@ vector<Token> Parser::parse(const string &expr)
     return toRPN(infix);
 }
 
-vector<Token> Parser::toRPN(const vector<Token> &tokens)
+vector<Token> Parser::toRPN(const vector<Token> &tokens, bool greedyFunctions)
 {
     vector<Token> output;
     stack<Token> opStack;

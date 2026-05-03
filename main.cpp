@@ -137,7 +137,7 @@ int main()
             }
 
             // Отладочный вывод RPN
-            auto rpn = Parser::parse(processedInput);
+            auto rpn = Parser::parse(processedInput, session.greedyFunctions);
             if (session.showRPN)
             {
                 cout << "[RPN] ";

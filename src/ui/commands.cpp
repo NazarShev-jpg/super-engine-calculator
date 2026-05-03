@@ -284,6 +284,20 @@ static bool handleRpn(const string& cmd, Session& session) {
     return false;
 }
 
+static bool handleFuncMode(const string& cmd, Session& session) {
+    if (cmd == "funcmode normal") {
+        session.greedyFunctions = true;
+        printResult(tr("funcmode_normal"));
+        return true;
+    }
+    if (cmd == "funcmode strict") {
+        session.greedyFunctions = false;
+        printResult(tr("funcmode_strict"));
+        return true;
+    }
+    return false;
+}
+
 // ======================== Главный диспетчер ========================
 bool processCommand(const string& inputLower, const string& originalInput,
                     Calculator& calc, Session& session) {
@@ -304,6 +318,6 @@ bool processCommand(const string& inputLower, const string& originalInput,
     if (handleFactor(cmd, originalInput, calc)) return true;
     if (handleCrt(cmd, originalInput, calc)) return true;
     if (handleRpn(cmd, session)) return true;
-
+    if (handleFuncMode(cmd,session)) return true;
     return false;
 }
