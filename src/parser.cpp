@@ -110,16 +110,13 @@ namespace
     int getPrecedence(const string &op, bool unary = false)
     {
         // Порядок приоритетов (от низшего к высшему):
-        // ||(-1) < &&(0) < ==/!=(1) < </>/<=/>=(2) < |(3) < &(4)
+        // ||(-1) < &&(0) < |(1) < &(2) < ==/!=(3) < </>/<=/>=(4)
         // < <</>>(5) < +/-(6) < *//(7) < %%(7) < ^(8) < ^^(9) < ^^^(10)
         // < постфикс(11) < унарный(12) < функция без скобок(13)
-        //
-        // Битовые & и | намеренно ВЫШЕ сравнений, чтобы
-        // 5 & 3 == 1  →  (5&3)==1 = 1  (интуитивно для калькулятора)
 
         // Унарные
         if (op == "u" || op == "u+" || op == "u!")
-            return 13;
+            return 12;
         if (op == "++" || op == "--")
             return unary ? 12 : 11;
         if (unary && (op == "-" || op == "~"))
@@ -129,13 +126,13 @@ namespace
         if (op == "||")  return -1;
         if (op == "&&")  return 0;
 
-        // Сравнения (ниже битовых)
-        if (op == "==" || op == "!=")                            return 1;
-        if (op == "<" || op == ">" || op == "<=" || op == ">=") return 2;
-
-        // Битовые (выше сравнений)
-        if (op == "|")   return 3;
+        // Битовые
+        if (op == "|")   return 1;
         if (op == "&")   return 4;
+
+        // Сравнения
+        if (op == "==" || op == "!=")              return 3;
+        if (op == "<" || op == ">" || op == "<=" || op == ">=") return 4;
 
         // Сдвиги
         if (op == "<<" || op == ">>")  return 5;
@@ -164,7 +161,7 @@ namespace
 
     bool isRightAssociative(const string &op)
     {
-        return op == "^" || op == "^^" || op == "^^^" || op == "u" || op == "~" || op == "u!" || op == "?" || op == "?:";
+        return op == "^" || op == "^^" || op == "^^^" || op == "u" || op == "~" || op == "u!";
     }
 }
 
@@ -176,7 +173,7 @@ vector<Token> Parser::parse(const string &expr, bool greedyFunctions)
     p.m_pos = 0;
     p.m_lastWasOperand = false;
     vector<Token> infix = p.tokenize();
-    return toRPN(infix);
+    return toRPN(infix, greedyFunctions);
 }
 
 vector<Token> Parser::toRPN(const vector<Token> &tokens, bool greedyFunctions)
@@ -328,6 +325,23 @@ vector<Token> Parser::toRPN(const vector<Token> &tokens, bool greedyFunctions)
                     if (top.type == TokenType::LeftParen)
                         break;
                     int topPrec = getPrec(top);
+
+                    // greedy-режим: функция без скобок держит аргумент
+                    // пока не встретит оператор с приоритетом <= 6 (+, -, |, &&, ||, ?:)
+                    // Пример: sin pi/2 → sin(pi/2)=1; sin pi+1 → sin(pi)+1
+                    if (greedyFunctions &&
+                        top.type == TokenType::Function && top.precedence > 0)
+                    {
+                        if (prec <= 6)
+                        {
+                            output.push_back(top);
+                            opStack.pop();
+                        }
+                        else
+                            break;
+                        continue;
+                    }
+
                     if ((isRightAssociative(actualOp) && prec < topPrec) ||
                         (!isRightAssociative(actualOp) && prec <= topPrec))
                     {
@@ -439,18 +453,19 @@ Token Parser::parseNumber()
         return Token(TokenType::Number, "0", "");
     }
 
-    // Если были ведущие нули и точки/экспоненты ещё нет — строим "0.000...digits"
-    // leadingZeros-1 нулей после точки, затем значащие цифры.
-    // Примеры: 025→0.25, 0025→0.025, 0123→0.123, 05→0.5
-    if (leadingZeros > 0 && !hasDot && !hasExp)
-    {
-        num = "0." + string(leadingZeros - 1, '0') + num;
-    }
-
     char *end;
     double val = strtod(num.c_str(), &end);
     if (end == num.c_str())
         throw runtime_error(tr("error_invalid_number") + num);
+
+    // Масштабирование, если были ведущие нули
+    if (leadingZeros > 0)
+    {
+        val /= pow(10.0, leadingZeros);
+        ostringstream oss;
+        oss << setprecision(16) << val;
+        num = oss.str();
+    }
 
     return Token(TokenType::Number, num, "");
 }
@@ -536,7 +551,7 @@ Token Parser::parseIdentifier()
         if (arity == 1)
         {
             Token tok(TokenType::Function, nameLower, "", 1);
-            tok.precedence = 12;  // выше унарного (12), как и положено функции без скобок
+            tok.precedence = 13;  // выше унарного (12), как и положено функции без скобок
             return tok;
         }
         else
